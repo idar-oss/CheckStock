@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CheckStock — Учёт остатков</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-icon">▦</span><span>Check<span class="brand-accent">Stock</span><small>Складской контроль</small></span></div>
+    <div class="nav-caption">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+    <nav id="nav"><button class="nav-link active" data-tab="overview">◫ <span>Обзор и остатки</span></button><button class="nav-link" data-tab="transfers">⇄ <span>Перемещения</span></button><button class="nav-link" data-tab="shipments">▣ <span>Отправки FBS / FBO</span></button><button class="nav-link" data-tab="warehouses">▥ <span>Склады</span></button><button class="nav-link" data-tab="history">◷ <span>История операций</span></button></nav>
+    <div class="sidebar-bottom"><span class="online-dot"></span> Локальный прототип <small>CheckStock · v1.0</small></div>
+  </aside>
+  <main class="content">
+    <header class="topbar"><div class="breadcrumbs">ПРОЕКТ / <strong id="crumb">ОБЗОР</strong></div><div class="top-right"><span class="live"><span class="online-dot"></span> Система активна</span><button class="icon-button" id="refresh" title="Обновить">↻</button><span class="avatar">CS</span></div></header>
+    <div class="main-inner">
+      <section class="tab-panel" id="panel-overview">
+        <div class="heading"><div><div class="eyebrow">УПРАВЛЕНИЕ ЗАПАСАМИ</div><h1>Обзор остатков</h1><p>Вся картина движения товаров — в одном месте.</p></div><button class="primary" data-modal="receipt">＋ Добавить приход</button></div>
+        <div class="stats" id="stats"></div>
+        <div class="section-head"><div><h2>Остатки по складам</h2><p>Физический остаток, резерв FBS и доступное количество</p></div><div class="filters"><input id="inventory-search" placeholder="⌕  Поиск по SKU или товару"><select id="inventory-warehouse"><option value="">Все склады</option></select></div></div>
+        <div class="table-wrap"><table><thead><tr><th>АРТИКУЛ / ТОВАР</th><th>СКЛАД ФФ</th><th class="num">ФИЗИЧЕСКИ</th><th class="num">РЕЗЕРВ FBS</th><th class="num">ДОСТУПНО</th><th>СОСТОЯНИЕ</th></tr></thead><tbody id="inventory-body"></tbody></table></div>
+        <div class="info-strip">ⓘ &nbsp; Доступно = физически на складе − резерв FBS. Товары в пути не включены в физический остаток.</div>
+        <div class="section-head transit-head"><div><h2>Товары в пути</h2><p>Отдельный учёт между ФФ, на маркетплейс по FBO и к клиенту по FBS</p></div></div>
+        <div class="table-wrap"><table><thead><tr><th>ТОВАР</th><th>НАПРАВЛЕНИЕ</th><th>ОТКУДА</th><th>КУДА</th><th class="num">КОЛ-ВО</th></tr></thead><tbody id="transit-body"></tbody></table></div>
+      </section>
+      <section class="tab-panel hidden" id="panel-transfers"><div class="heading"><div><div class="eyebrow">ЛОГИСТИКА</div><h1>Перемещения между ФФ</h1><p>Отправка, отслеживание товаров в пути и приёмка.</p></div><button class="primary" data-modal="transfer">⇄ Новое перемещение</button></div><div class="section-head"><div><h2>Список перемещений</h2><p>После отправки товар учитывается в пути до подтверждения приёмки</p></div></div><div class="table-wrap"><table><thead><tr><th>№</th><th>ТОВАР</th><th>МАРШРУТ</th><th class="num">КОЛ-ВО</th><th>СТАТУС</th><th>ДЕЙСТВИЕ</th></tr></thead><tbody id="transfers-body"></tbody></table></div></section>
+      <section class="tab-panel hidden" id="panel-shipments"><div class="heading"><div><div class="eyebrow">МАРКЕТПЛЕЙСЫ</div><h1>Отправки FBS и FBO</h1><p>Контроль резервов и поставок до финального подтверждения.</p></div><div class="actions"><button class="secondary" data-modal="fbs">＋ Резерв FBS</button><button class="primary" data-modal="fbo">↗ Отправить FBO</button></div></div><div class="legend"><span><b class="dot violet"></b> FBS — сначала резерв, затем отправка клиенту</span><span><b class="dot blue"></b> FBO — товар сразу покидает склад ФФ</span></div><div class="table-wrap"><table><thead><tr><th>№ / ТИП</th><th>ТОВАР</th><th>СКЛАД</th><th class="num">КОЛ-ВО</th><th>СТАТУС</th><th>ДЕЙСТВИЯ</th></tr></thead><tbody id="shipments-body"></tbody></table></div></section>
+      <section class="tab-panel hidden" id="panel-warehouses"><div class="heading"><div><div class="eyebrow">СПРАВОЧНИК</div><h1>Склады фулфилмента</h1><p>Управление складами с сохранением истории и остатков.</p></div><button class="primary" data-modal="warehouse">＋ Добавить склад</button></div><div id="warehouse-cards" class="warehouse-grid"></div><div class="info-strip">ⓘ &nbsp; Удаление означает архивирование: остатки и история остаются в системе. Новые отправки с архивного склада запрещены.</div></section>
+      <section class="tab-panel hidden" id="panel-history"><div class="heading"><div><div class="eyebrow">АУДИТ</div><h1>История операций</h1><p>Каждое изменение записано: что, откуда, куда и сколько.</p></div></div><div class="table-wrap"><table><thead><tr><th>ДАТА И ВРЕМЯ</th><th>ОПЕРАЦИЯ</th><th>ТОВАР</th><th>ОТКУДА</th><th>КУДА</th><th class="num">КОЛ-ВО</th><th>ДЕТАЛИ</th></tr></thead><tbody id="history-body"></tbody></table></div></section>
+    </div>
+  </main>
+</div>
+<div id="modal" class="modal-backdrop hidden"><div class="modal"><div class="modal-head"><div><div class="eyebrow">CHECKSTOCK / ОПЕРАЦИЯ</div><h2 id="modal-title">Новая операция</h2></div><button class="close" id="modal-close" aria-label="Закрыть">×</button></div><form id="operation-form"><div id="modal-fields"></div><div class="form-error hidden" id="form-error"></div><div class="modal-actions"><button type="button" class="secondary" id="modal-cancel">Отмена</button><button type="submit" class="primary" id="modal-submit">Подтвердить</button></div></form></div></div>
+<div id="toast" class="toast hidden" role="status"></div>
+<script src="/static/app.js"></script></body></html>

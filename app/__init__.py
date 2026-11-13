@@ -1,0 +1,1 @@
+"""CheckStock inventory management prototype."""
